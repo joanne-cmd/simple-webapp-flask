@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-deployment
+  labels:
+    app: flask-app
+spec:
+  replicas: 2
+  selector: 
+      matchLabels:
+        app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+        - name: flask-webapp
+          image: joannetich/simple-webapp-flask:latest
+          ports:
+            - containerPort: 80
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 3000
+---
+
+# Internal Service to expose the app within the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-service
+spec:
+  selector:
+    app: flask-app
+  ports:
+  - protocol: TCP
+    port: 80  
+    targetPort: 80 
+  type: ClusterIP  
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-internal-ingress
+spec:
+  podSelector:
+    matchLabels:
+      app: internal-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    ports:
+    - protocol: TCP
+      port: 80
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: internal
+    ports:
+    - protocol: TCP
+      port: 443
