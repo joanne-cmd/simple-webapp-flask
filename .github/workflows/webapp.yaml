@@ -38,7 +38,7 @@ jobs:
           sudo kind load docker-image joannetich/simple-webapp-flask:latest --name kind
       - name: Apply Kubernetes manifests
         run: |
-          kubectl apply -f k8s-deployment.yaml
+          kubectl apply -f k8s/flask-deployment.yaml
 
 
 
