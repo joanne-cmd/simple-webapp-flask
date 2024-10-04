@@ -1,4 +1,3 @@
-          
 name: Deploy Flask App
 on:
   push:
@@ -32,11 +31,11 @@ jobs:
         with:
           version: v0.21.0
       - name: Create Kind cluster
-        run: kind create cluster --name webapp
+        run: kind create cluster --name kind
       - name: Load Docker image into Kind
         run: |
           sudo docker pull joannetich/simple-webapp-flask:latest
-          sudo kind load docker-image joannetich/simple-webapp-flask:latest --name webapp
+          sudo kind load docker-image joannetich/simple-webapp-flask:latest --name kind
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f k8s-deployment.yaml
