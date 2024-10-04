@@ -102,6 +102,9 @@ The application has a makefile to help with the common development task such as 
 
 while running the make command  make sure you use the permissions " sudo"
 
+### 4Test
 
-   
-
+Open a browser and go to URL
+```
+http://localhost:5000                            => Welcome
+http://localhost:5000/how%20are%20you            => I am good, how about you
