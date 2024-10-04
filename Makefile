@@ -25,9 +25,11 @@ push: build
 	@echo "Pushing Docker image to Docker Hub..."
 	docker push $(DOCKER_IMAGE)
 
-# Create a Kind cluster
+# Create a Kind cluster (with cleanup)
 .PHONY: kind-cluster
 kind-cluster:
+	@echo "Deleting existing Kind cluster (if any)..."
+	kind delete cluster --name kind || true
 	@echo "Creating Kind cluster..."
 	kind create cluster --name kind
 
