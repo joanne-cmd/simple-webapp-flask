@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,14 +15,15 @@ jobs:
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
+
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Use the Makefile to build and push the Docker image
-      - name: Build and Push Docker Image
+      - name: Build Docker image
         run: |
-          make push
+          docker build -t joannetich/simple-webapp-flask:latest .
+          docker push joannetich/simple-webapp-flask:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -32,10 +32,22 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      # Use the Makefile to create a Kind cluster, load the image, and deploy
-      - name: Deploy to Kubernetes
+      - name: Set up Kind
+        uses: helm/kind-action@v1
+        with:
+          version: v0.21.0
+      - name: Create Kind cluster
+        run: kind create cluster --name kind
+      - name: Load Docker image into Kind
         run: |
-          make kind-cluster
-          make load-image
-          make deploy
+          sudo docker pull joannetich/simple-webapp-flask:latest
+          sudo kind load docker-image joannetich/simple-webapp-flask:latest --name kind
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f k8s/flask-deployment.yaml
+
+
+
+
+
+
