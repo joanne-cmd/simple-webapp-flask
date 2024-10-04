@@ -24,6 +24,10 @@ build:
 push: build
 	@echo "Pushing Docker image to Docker Hub..."
 	docker push $(DOCKER_IMAGE)
+	
+# Run the Flask application locally
+run:
+	docker run -d -p 80:80 joannetich/simple-webapp-flask:latest
 
 # Create a Kind cluster (with cleanup)
 .PHONY: kind-cluster
